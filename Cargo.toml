@@ -1,0 +1,12 @@
+[package]
+name = "iced-greet"
+version = "0.1.0"
+authors = ["AsriFox <asrifox@yandex.ru>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+iced = { version = "0.4" }
+iced_native = "^0.5"
+greetd_ipc = { version = "^0.8", features = ["sync-codec"] }
