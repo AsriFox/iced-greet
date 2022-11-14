@@ -12,19 +12,23 @@ use iced::widget::text_input;
 use once_cell::sync::Lazy;
 
 use crate::greeter::Greeter;
+use crate::query::users::query_usernames;
 
-static INPUT_ID_USERNAME: Lazy<text_input::Id> = Lazy::new(text_input::Id::unique);
+// static INPUT_ID_USERNAME: Lazy<text_input::Id> = Lazy::new(text_input::Id::unique);
 static INPUT_ID_PASSWORD: Lazy<text_input::Id> = Lazy::new(text_input::Id::unique);
 
 #[derive(Default)]
 pub struct GreetWindow {
     greeter: Greeter,
     state: GreetWindowState,
-    exit: bool,
     
+    editing_username: bool,
     username: Option<String>,
+    users: Vec<String>,
+
     password: String,
     status: String,
+    exit: bool,
 }
 
 #[derive(Default)]
@@ -39,8 +43,13 @@ pub enum Message {
     InputUsernameChanged(String),
     InputPasswordChanged(String),
     InputCmdChanged(String),
+
     InputSubmitted,
-    ButtonExitPressed,
+    // ButtonExitPressed,
+    ButtonShutdownPressed,
+    ButtonRestartPressed,
+
+    ToggleEditingUsername,
     TabPressed { shift: bool },
 }
 
@@ -51,8 +60,22 @@ impl iced::Application for GreetWindow {
     type Flags = ();
 
     fn new(_flags: Self::Flags) -> (Self, Command<Message>) {
+        let users = 
+            match query_usernames() {
+                Ok(users) => users,
+                Err(_) => Vec::<String>::new(),
+            };
+        let username = 
+            if users.len() > 0 {
+                Some(users[0].clone())
+            } else { None };
+
         (
-            Self::default(),
+            Self {
+                username,
+                users,
+                ..Self::default()
+            },
             Command::none(),
         )
     }
@@ -65,9 +88,9 @@ impl iced::Application for GreetWindow {
         iced::Theme::Dark
     }
 
-    fn should_exit(&self) -> bool {
-        self.exit
-    }
+    // fn should_exit(&self) -> bool {
+    //     self.exit
+    // }
 
     fn view(&self) -> iced::Element<'_, Self::Message, iced::Renderer<Self::Theme>> {
         view::view(self)

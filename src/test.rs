@@ -1,12 +1,16 @@
 use iced::{Alignment, Length};
-use iced::widget::container;
+use iced::widget::{ container, column as iced_col, row as iced_row };
 use crate::query::{sessions::*, users::*};
 use crate::ui::widgets::*;
+use crate::ui::widgets::pick_input::custom_pick_input;
 
 #[derive(Default)]
 pub struct TestWindow {
+    editing_username: bool,
+    editing_cmd: bool,
     exit: bool,
     username: Option<String>,
+    users: Vec<String>,
     password: String,
     session: String,
     sessions: Vec<String>,
@@ -16,7 +20,11 @@ pub struct TestWindow {
 pub enum Message {
     InputUsernameChanged(String),
     InputPasswordChanged(String),
-    SessionSelected(String),
+    InputCmdChanged(String),
+
+    ToggleEditingUsername,
+    ToggleEditingCmd,
+
     ButtonExitPressed,
     None,
 }
@@ -32,8 +40,27 @@ impl iced::Sandbox for TestWindow {
         if let Ok(sessions_wayland) = query_sessions_wayland() {
             sessions = [sessions, sessions_wayland].concat();
         }
+        let session = 
+            if sessions.len() > 0 { 
+                sessions[0].clone() 
+            } else { String::new() };
+
+        let users = 
+            match query_usernames() {
+                Ok(users) => users,
+                Err(_) => Vec::<String>::new(),
+            };
+        let username = 
+            if users.len() > 0 {
+                Some(users[0].clone())
+            } else { None };
+
         Self {
-            session: sessions[0].clone(),
+            editing_username: users.is_empty(),
+            editing_cmd: sessions.is_empty(),
+            username,
+            users,
+            session,
             sessions,
             ..Self::default()
         }
@@ -52,17 +79,12 @@ impl iced::Sandbox for TestWindow {
     }
 
     fn view(&self) -> iced::Element<'_, Self::Message> {
-        let header = custom_text(
-            "Welcome to Iced"
-        );
-
-        let input_username = custom_text_input(
-            "Username",
-            &match &self.username {
-                Some(u) => u.clone(),
-                None => String::new(),
-            }, 
+        let input_username = custom_pick_input(
+            self.users.clone(),
+            self.username.clone(),
             Message::InputUsernameChanged,
+            self.editing_username,
+            Message::ToggleEditingUsername
         );
 
         let input_password = custom_text_input(
@@ -72,40 +94,47 @@ impl iced::Sandbox for TestWindow {
         )
         .password();
 
-        let pick_cmd = custom_pick_list(
+        let input_cmd = custom_pick_input(
             self.sessions.clone(),
-            self.session.clone(),
-            Message::SessionSelected
-        );
-
-        let button_login = custom_text_button(
-            "Login",
-            Message::None,
-        );
-
-        let status_text = custom_text(
-            "Status goes here"
-        );
-
-        let button_exit = custom_text_button(
-            "Exit",
-            Message::ButtonExitPressed,
+            Some(self.session.clone()),
+            Message::InputCmdChanged,
+            self.editing_cmd,
+            Message::ToggleEditingCmd,
         );
 
         container(
-            iced::widget::column![
-                header,
+            iced_col![
+                custom_text(
+                    "Welcome to Iced"
+                ),
+
                 input_username,
                 input_password,
+                input_cmd,
 
-                iced::widget::row![
-                    pick_cmd,
-                    button_login,
-                ]
-                .spacing(10),
+                iced_row![
+                    custom_text_button(
+                        "SD",
+                        Message::None,
+                    ).width(Length::Units(32)),
+                    custom_text_button(
+                        "RE",
+                        Message::None,
+                    ).width(Length::Units(32)),
+                    custom_text_button(
+                        "Login",
+                        Message::None,
+                    ).width(Length::Fill),
+                ].spacing(10),
 
-                status_text,
-                button_exit,
+                custom_text(
+                    "Status goes here"
+                ),
+
+                custom_text_button(
+                    "Exit",
+                    Message::ButtonExitPressed,
+                ),
             ]
             .spacing(10)
             .width(Length::Units(200))
@@ -128,8 +157,14 @@ impl iced::Sandbox for TestWindow {
             Message::InputPasswordChanged(value) => {
                 self.password = value;
             },
-            Message::SessionSelected(value) => {
+            Message::InputCmdChanged(value) => {
                 self.session = value;
+            },
+            Message::ToggleEditingUsername => {
+                self.editing_username = !self.editing_username;
+            },
+            Message::ToggleEditingCmd => {
+                self.editing_cmd = !self.editing_cmd;
             },
             Message::None => {},
         }

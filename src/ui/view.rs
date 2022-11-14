@@ -1,9 +1,10 @@
 use iced::{ Alignment, Length };
 use iced::widget::container;
 
-use crate::ui::widgets::*;
+use crate::ui::widgets::{ *, pick_input::* };
 use super::{
-    INPUT_ID_USERNAME, INPUT_ID_PASSWORD,
+    // INPUT_ID_USERNAME, 
+    INPUT_ID_PASSWORD,
     GreetWindow, GreetWindowState, Message,
 };
 
@@ -15,16 +16,13 @@ pub fn view(state: &GreetWindow) -> iced::Element<'_, Message, iced::Renderer<ic
         }
     );
 
-    let input_username = custom_text_input(
-        "Username", 
-        &match &state.username {
-            Some(u) => u.clone(),
-            None => String::new(),
-        },
+    let input_username = custom_pick_input(
+        state.users.clone(),
+        state.username.clone(), 
         Message::InputUsernameChanged,
-    )
-    .id(INPUT_ID_USERNAME.clone())
-    .on_submit(Message::InputSubmitted);
+        state.editing_username, 
+        Message::ToggleEditingUsername,
+    );
 
     let input_password = custom_text_input(
         "Password", 
@@ -39,36 +37,35 @@ pub fn view(state: &GreetWindow) -> iced::Element<'_, Message, iced::Renderer<ic
         "Command",
         &state.greeter.cmd,
         Message::InputCmdChanged,
-    );
-
-    let button_login = custom_text_button(
-        "Login", 
-        Message::InputSubmitted,
-    );
-
-    let status_text = custom_text(
-        state.status.clone(),
-    );
-
-    let button_exit = custom_text_button(
-        "Exit",
-        Message::ButtonExitPressed,
-    );
+    )
+    .on_submit(Message::InputSubmitted);
 
     container(
     iced::widget::column![
             header,
             input_username,
             input_password,
+            input_cmd,
 
             iced::widget::row![
-                input_cmd,
-                button_login,
+                custom_text_button(
+                    "SD",
+                    Message::ButtonShutdownPressed,
+                ).width(Length::Units(32)),
+                custom_text_button(
+                    "RE",
+                    Message::ButtonRestartPressed,
+                ).width(Length::Units(32)),
+                custom_text_button(
+                    "Login", 
+                    Message::InputSubmitted,
+                ).width(Length::Fill),
             ]
             .spacing(10),
 
-            status_text,
-            button_exit,
+            custom_text(
+                state.status.clone()
+            ),
         ]
         .spacing(10)
         .width(Length::Units(200))

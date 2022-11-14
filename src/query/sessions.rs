@@ -3,16 +3,22 @@ fn dir_ls(path: &str) -> Result<Vec<String>, i32> {
     return if let Ok(paths) = dir {
         Ok(
             paths.map(
-                |entry| String::from(
-                    entry.unwrap().path()
-                        .to_str().unwrap()
-                )
+                |entry| { 
+                    // let path = entry.unwrap().path().to_str().unwrap();
+                    // let contents = String::from_utf8_lossy(
+                    //     &std::fs::read(path).unwrap()
+                    // );
+                    String::from(entry.unwrap().path().to_str().unwrap())
+                    // , String::from(contents) )
+                }
             ).collect()
         )
     } else {
         Err(
-            dir.expect_err("Read contents of '/usr/share/xsessions'")
-                .raw_os_error().unwrap()
+            dir.expect_err(
+                format!("Read contents of '{path}'").as_str()
+            )
+            .raw_os_error().unwrap()
         )
     }
 }

@@ -6,6 +6,7 @@ use iced::widget::{
     text, Text,
     text_input, TextInput,
 };
+pub mod pick_input;
 
 const CUSTOM_PADDING: u16 = 5;
 const CUSTOM_FONT_SIZE: u16 = 20;
@@ -31,15 +32,19 @@ pub fn custom_text_button<'a, Message: Clone>(
     caption: &str,
     msg: Message,
 ) -> Button<'a, Message, Renderer<Theme>> {
-    button(text(caption))
-        .on_press(msg)
+    button(
+        text(caption)
+            .horizontal_alignment(iced::alignment::Horizontal::Center)
+    )
+    .on_press(msg)
 }
 
 pub fn custom_pick_list<'a, Message: Clone>(
     options: Vec<String>,
-    selected: String,
+    selected: Option<String>,
     on_selected: impl Fn(String) -> Message + 'a,
 ) -> PickList<'a, String, Message, Renderer<Theme>> {
-    pick_list(options, Some(selected), on_selected)
+    pick_list(options, selected, on_selected)
         .placeholder("Session")
+        .width(iced::Length::Fill)
 }
