@@ -104,7 +104,13 @@ fn submit_password(state: &mut GreetWindow) -> Command<Message> {
         .respond_to_auth_message(Some(state.password.clone()))
         .expect("Failed to respond") {
         LoginResult::Failure => {
-            state.status = String::from("Login failed: wrong password");
+            if state.editing_username {
+                state.status = String::from("Login failed: wrong username or password");
+                state.state = GreetWindowState::EnterUsername;
+            } else {
+                state.status = String::from("Login failed: wrong password");
+                return submit_username(state);
+            }
         },
         LoginResult::Success => {
             state.status = String::from("Starting session");
