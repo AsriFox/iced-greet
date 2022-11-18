@@ -1,6 +1,46 @@
 use std::{ env, os::unix::net::UnixStream };
 use greetd_ipc::{ codec::SyncCodec, AuthMessageType, ErrorType, Request, Response };
 
+/// Wrapper class for greetd IPC communication.
+/// 
+/// Contains a Unix socket that uses greetd_ipc protocol to (maybe) log in.
+/// 
+/// For more information on response variants see [`LoginResult`].
+/// 
+/// ## Example
+/// ```
+/// use iced_greet::greeter::{ Greeter, LoginResult };
+/// 
+/// let mut greeter = Greeter::new("command/to/run");
+/// 
+/// let result: LoginResult = greeter.request_login("username");
+/// 
+/// if let Ok(login_result) = result {
+///     let result = match login_result {
+///         LoginResult::PromptVisible(_)
+///         | LoginResult::PromptSecret(_) => {
+///             greeter.respond_to_auth_message("password")
+///         },
+///         _ => {
+///             stderr!("Something went wrong");
+///             Err(login_result)
+///         }
+///     }
+///     if let Ok(login_result) = result {
+///         match login_result {
+///             LoginResult::Failure => {
+///                 stderr!("Wrong username or password");
+///             },
+///             LoginResult::Success => {
+///                 stderr!("Login successful");
+///             },
+///             _ => {
+///                 stderr!("Something went wrong")
+///             },
+///         }
+///     }
+/// }
+/// ```
 pub struct Greeter {
     stream: UnixStream,
     pub cmd: String,

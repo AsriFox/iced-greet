@@ -1,3 +1,10 @@
+//! ## iced-greet
+//! 
+//! Greeter window for greetd built with iced
+//! 
+//! Command-line arguments:
+//! - *test* - run the testing version (without connecting to greetd socket) 
+
 mod ui;
 mod greeter;
 mod query;

@@ -23,10 +23,32 @@ fn dir_ls(path: &str) -> Result<Vec<String>, i32> {
     }
 }
 
+/// Query xorg sessions from `/usr/share/xsessions`.
+/// 
+/// Returns either a list of paths to `[session].desktop` files or an `i32` error code.
+/// 
+/// Typical error codes:
+/// 
+/// | Code | Name | Error message |
+/// |-|-|-|
+/// |  1 | EPERM  | Operation not permitted |
+/// |  2 | ENOENT | No such file or directory |
+/// | 13 | EACCES | Permission denied |
 pub fn query_sessions_xorg() -> Result<Vec<String>, i32> {
     dir_ls("/usr/share/xsessions")
 }
 
+/// Query Wayland sessions from `/usr/share/wayland-sessions`.
+/// 
+/// Returns either a list of paths to `[session].desktop` files or an `i32` error code.
+/// 
+/// Typical error codes:
+/// 
+/// | Code | Name | Error message |
+/// |-|-|-|
+/// |  1 | EPERM  | Operation not permitted |
+/// |  2 | ENOENT | No such file or directory |
+/// | 13 | EACCES | Permission denied |
 pub fn query_sessions_wayland() -> Result<Vec<String>, i32> {
     dir_ls("/usr/share/wayland-sessions")
 }
