@@ -1,5 +1,5 @@
 use iced::{ Alignment, Length };
-use iced::widget::container;
+use iced::widget::{ container, image::viewer };
 
 use crate::ui::widgets::{ *, pick_input::* };
 use super::{
@@ -42,7 +42,11 @@ pub fn view(state: &GreetWindow) -> iced::Element<'_, Message, iced::Renderer<ic
 
     container(
     iced::widget::column![
-            header,
+            if let Some(image) = &state.user_image {
+                iced::Element::<Message>::from(viewer(image.clone()))
+            } else { 
+                iced::Element::<Message>::from(header)
+            },
             input_username,
             input_password,
             input_cmd,

@@ -73,14 +73,14 @@ fn submit_username(state: &mut GreetWindow) -> Command<Message> {
     match state.greeter
         .request_login(state.username.clone().unwrap())
         .expect("An error occured") {
-        LoginResult::PromptVisible(status) => {
-            state.state = GreetWindowState::EnterPassword;
-            state.status = status;
-            return text_input::focus(INPUT_ID_PASSWORD.clone());
-        },
-        LoginResult::PromptSecret(_) => {
+        LoginResult::PromptVisible(_) 
+        | LoginResult::PromptSecret(_) => {
             state.state = GreetWindowState::EnterPassword;
             state.status = String::new();
+            state.user_image = 
+                if let Some(username) = &state.username {
+                    Some(crate::ui::get_user_image(username.clone()))
+                } else { None };
             return text_input::focus(INPUT_ID_PASSWORD.clone());
         },
         LoginResult::AuthInfo(status) | LoginResult::AuthError(status) => {
