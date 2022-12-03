@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug 'iced-greet' test window",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=iced-greet",
+                    "--package=iced-greet"
+                ],
+                "filter": {
+                    "name": "iced-greet",
+                    "kind": "bin"
+                }
+            },
+            "args": ["test"],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'iced-greet'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=iced-greet",
+                    "--package=iced-greet"
+                ],
+                "filter": {
+                    "name": "iced-greet",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
