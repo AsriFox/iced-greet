@@ -9,6 +9,13 @@ use super::{
 };
 
 pub fn view(state: &GreetWindow) -> iced::Element<'_, Message, iced::Renderer<iced::Theme>> {
+    let user_image: iced::Element<Message> = 
+        if let Some(image) = &state.user_image {
+            iced::widget::image(image.clone()).into()
+        } else {
+            custom_text("").into()
+        };
+
     let header = custom_text(
         match state.state {
             GreetWindowState::EnterUsername => "Enter username",
@@ -42,6 +49,7 @@ pub fn view(state: &GreetWindow) -> iced::Element<'_, Message, iced::Renderer<ic
 
     container(
     iced::widget::column![
+            container(user_image).width(Length::Units(100)),
             header,
             input_username,
             input_password,

@@ -8,7 +8,7 @@ use iced::{
     event::{ Event, Status },
     keyboard,
 };
-use iced::widget::text_input;
+use iced::widget::{ image, text_input };
 use once_cell::sync::Lazy;
 
 use crate::greeter::Greeter;
@@ -17,10 +17,10 @@ use crate::query::users::query_usernames;
 // static INPUT_ID_USERNAME: Lazy<text_input::Id> = Lazy::new(text_input::Id::unique);
 static INPUT_ID_PASSWORD: Lazy<text_input::Id> = Lazy::new(text_input::Id::unique);
 
-#[derive(Default)]
 pub struct GreetWindow {
     greeter: Greeter,
     state: GreetWindowState,
+    user_image: Option<image::Handle>,
     
     editing_username: bool,
     username: Option<String>,
@@ -53,6 +53,12 @@ pub enum Message {
     TabPressed { shift: bool },
 }
 
+pub fn get_user_image(username: String) -> image::Handle {
+    image::Handle::from_path(
+        format!("/etc/greetd/faces/{username}.png")
+    )
+}
+
 impl iced::Application for GreetWindow {
     type Message = Message;
     type Theme = iced::Theme;
@@ -65,16 +71,28 @@ impl iced::Application for GreetWindow {
                 Ok(users) => users,
                 Err(_) => Vec::<String>::new(),
             };
+
         let username = 
             if users.len() > 0 {
                 Some(users[0].clone())
             } else { None };
 
+        let user_image = None;
+            // if let Some(username) = &username {
+            //     Some(get_user_image(username.clone()))
+            // } else { None };
+
         (
             Self {
+                greeter:    Default::default(),
+                state:      Default::default(),
+                password:   Default::default(),
+                status:     Default::default(),
+                editing_username: false,
+                exit: false,
+                user_image,
                 username,
                 users,
-                ..Self::default()
             },
             Command::none(),
         )
