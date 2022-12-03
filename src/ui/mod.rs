@@ -55,7 +55,7 @@ pub enum Message {
 
 pub fn get_user_image(username: String) -> image::Handle {
     image::Handle::from_path(
-        format!("/etc/greetd/faces/{username}.jpg")
+        format!("/etc/greetd/faces/{username}.png")
     )
 }
 
@@ -77,10 +77,10 @@ impl iced::Application for GreetWindow {
                 Some(users[0].clone())
             } else { None };
 
-        let user_image = 
-            if let Some(username) = &username {
-                Some(get_user_image(username.clone()))
-            } else { None };
+        let user_image = None;
+            // if let Some(username) = &username {
+            //     Some(get_user_image(username.clone()))
+            // } else { None };
 
         (
             Self {

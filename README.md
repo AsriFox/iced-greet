@@ -5,6 +5,8 @@ Graphical greeter for *[greetd](https://git.sr.ht/~kennylevinsen/greetd)* made w
 * Input username directly or select from the list (queries */etc/passwd*)
 * Launch [any program](https://man.sr.ht/~kennylevinsen/greetd/#what-can-greetd-start) on authentification
 * Shutdown (SD) or restart (RE)
+* User avatars
+* * Put images named {username}*.png* in */etc/greetd/faces/* (e.g. */etc/greetd/faces/***asrifox***.png*)
 
 ## Planned
 * Configuration/theming

@@ -1,7 +1,6 @@
-use std::hash::Hash;
-
 use iced::{Alignment, Length};
 use iced::widget::{ container, column as iced_col, row as iced_row };
+use iced_native::image::Handle;
 use crate::query::{sessions::*, users::*};
 use crate::ui::widgets::*;
 use crate::ui::widgets::pick_input::custom_pick_input;
@@ -108,13 +107,15 @@ impl iced::Sandbox for TestWindow {
             iced_col![
                 container(
                     iced::widget::image(
-                        format!("{}/images/blackjack.png", env!("CARGO_MANIFEST_DIR"))
+                        Handle::from_path(
+                            format!(
+                                "{}/images/blackjack.png", 
+                                env!("CARGO_MANIFEST_DIR")
+                            )
+                        )
                     ),
                 )
-                .width(Length::Units(100))
-                .style(
-                    ImageContainerStyle {}
-                ),
+                .width(Length::Units(100)),
                 custom_text("Welcome to Iced"),
                 input_username,
                 input_password,
@@ -176,25 +177,5 @@ impl iced::Sandbox for TestWindow {
             },
             Message::None => {},
         }
-    }
-}
-
-struct ImageContainerStyle {}
-
-impl container::StyleSheet for ImageContainerStyle {
-    type Style = iced::Theme;
-    fn appearance(&self, _style: &Self::Style) -> container::Appearance {
-        container::Appearance {
-            border_width: 10.0,
-            border_color: iced::Color::WHITE,
-            border_radius: 100.0,
-            ..Default::default()
-        }
-    }
-}
-
-impl Into<iced::theme::Container> for ImageContainerStyle {
-    fn into(self) -> iced::theme::Container {
-        iced::theme::Container::Custom(Box::new(self))
     }
 }
