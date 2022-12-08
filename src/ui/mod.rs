@@ -1,5 +1,4 @@
 pub mod widgets;
-pub mod window;
 mod view;
 mod update;
 
@@ -12,6 +11,7 @@ use iced::widget::{ image, text_input };
 use once_cell::sync::Lazy;
 
 use crate::greeter::Greeter;
+use crate::query::cmd::query_cmds;
 use crate::query::users::query_usernames;
 
 // static INPUT_ID_USERNAME: Lazy<text_input::Id> = Lazy::new(text_input::Id::unique);
@@ -25,6 +25,9 @@ pub struct GreetWindow {
     editing_username: bool,
     username: Option<String>,
     users: Vec<String>,
+
+    editing_cmd: bool,
+    cmds: Vec<String>,
 
     password: String,
     status: String,
@@ -50,6 +53,7 @@ pub enum Message {
     ButtonRestartPressed,
 
     ToggleEditingUsername,
+    ToggleEditingCmd,
     TabPressed { shift: bool },
 }
 
@@ -66,10 +70,16 @@ impl iced::Application for GreetWindow {
     type Flags = ();
 
     fn new(_flags: Self::Flags) -> (Self, Command<Message>) {
+        let cmds = 
+            match query_cmds() {
+                Ok(cmds) => cmds,
+                Err(_) => vec![],
+            };
+
         let users = 
             match query_usernames() {
                 Ok(users) => users,
-                Err(_) => Vec::<String>::new(),
+                Err(_) => vec![],
             };
 
         let username = 
@@ -84,15 +94,21 @@ impl iced::Application for GreetWindow {
 
         (
             Self {
-                greeter:    Default::default(),
+                greeter: if cmds.len() > 0 {
+                    Greeter::new(cmds[0].clone())
+                } else {
+                    Greeter::default()
+                },
                 state:      Default::default(),
                 password:   Default::default(),
                 status:     Default::default(),
                 editing_username: false,
+                editing_cmd: false,
                 exit: false,
                 user_image,
                 username,
                 users,
+                cmds,
             },
             Command::none(),
         )

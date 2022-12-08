@@ -1,7 +1,7 @@
 use iced::{Alignment, Length};
 use iced::widget::{ container, column as iced_col, row as iced_row };
 use iced_native::image::Handle;
-use crate::query::{sessions::*, users::*};
+use crate::query::{cmd::*, users::*};
 use crate::ui::widgets::*;
 use crate::ui::widgets::pick_input::custom_pick_input;
 
@@ -35,11 +35,14 @@ impl iced::Sandbox for TestWindow {
 
     fn new() -> Self {
         let mut sessions = Vec::<String>::new();
-        if let Ok(sessions_xorg) = query_sessions_xorg() {
-            sessions = [sessions, sessions_xorg].concat();
-        }
-        if let Ok(sessions_wayland) = query_sessions_wayland() {
-            sessions = [sessions, sessions_wayland].concat();
+        // if let Ok(sessions_xorg) = query_sessions_xorg() {
+        //     sessions = [sessions, sessions_xorg].concat();
+        // }
+        // if let Ok(sessions_wayland) = query_sessions_wayland() {
+        //     sessions = [sessions, sessions_wayland].concat();
+        // }
+        if let Ok(cmds) = query_cmds() {
+            sessions = [sessions, cmds].concat();
         }
         let session = 
             if sessions.len() > 0 { 
