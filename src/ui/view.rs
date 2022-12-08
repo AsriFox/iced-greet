@@ -40,12 +40,13 @@ pub fn view(state: &GreetWindow) -> iced::Element<'_, Message, iced::Renderer<ic
     .id(INPUT_ID_PASSWORD.clone())
     .on_submit(Message::InputSubmitted);
 
-    let input_cmd = custom_text_input(
-        "Command",
-        &state.greeter.cmd,
+    let input_cmd = custom_pick_input(
+        state.cmds.clone(),
+        Some(state.greeter.cmd.clone()),
         Message::InputCmdChanged,
-    )
-    .on_submit(Message::InputSubmitted);
+        state.editing_cmd,
+        Message::ToggleEditingCmd,
+    );
 
     container(
     iced::widget::column![

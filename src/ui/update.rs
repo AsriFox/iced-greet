@@ -34,6 +34,7 @@ pub fn update(state: &mut GreetWindow, message: Message) -> Command<Message> {
             }
         },
         Message::ToggleEditingUsername => state.editing_username = !state.editing_username,
+        Message::ToggleEditingCmd => state.editing_cmd = !state.editing_cmd,
         Message::InputCmdChanged(value) => {
             state.greeter.cmd = value;
         },
