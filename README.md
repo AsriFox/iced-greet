@@ -4,14 +4,15 @@ Graphical greeter for *[greetd](https://git.sr.ht/~kennylevinsen/greetd)* made w
 ## Features
 * Input username directly or select from the list (queries */etc/passwd*)
 * Launch [any program](https://man.sr.ht/~kennylevinsen/greetd/#what-can-greetd-start) on authentification
+  * Select from your Xorg (*/usr/share/xsessions*) or Wayland (*/usr/share/wayland-sessions*) sessions
   * Select from the predefined list in */etc/greetd/environments*
+  * Or input the command directly
 * Shutdown (SD) or restart (RE)
 * User avatars
   * Put images named {username}*.png* in */etc/greetd/faces/* (e.g. */etc/greetd/faces/***asrifox***.png*)
 
 ## Planned
 * Configuration/theming
-* Use session files (*/usr/share/xsessions* and */usr/share/wayland-sessions*)
 * User avatar in a circle
 
 ## Install

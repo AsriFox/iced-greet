@@ -11,8 +11,10 @@ use iced::widget::{ image, text_input };
 use once_cell::sync::Lazy;
 
 use crate::greeter::Greeter;
-use crate::query::cmd::query_cmds;
-use crate::query::users::query_usernames;
+use crate::query::{
+    query_all_cmds,
+    users::query_usernames,
+};
 
 // static INPUT_ID_USERNAME: Lazy<text_input::Id> = Lazy::new(text_input::Id::unique);
 static INPUT_ID_PASSWORD: Lazy<text_input::Id> = Lazy::new(text_input::Id::unique);
@@ -70,16 +72,10 @@ impl iced::Application for GreetWindow {
     type Flags = ();
 
     fn new(_flags: Self::Flags) -> (Self, Command<Message>) {
-        let cmds = 
-            match query_cmds() {
-                Ok(cmds) => cmds,
-                Err(_) => vec![],
-            };
-
         let users = 
             match query_usernames() {
                 Ok(users) => users,
-                Err(_) => vec![],
+                _ => vec![],
             };
 
         let username = 
@@ -92,10 +88,13 @@ impl iced::Application for GreetWindow {
             //     Some(get_user_image(username.clone()))
             // } else { None };
 
+        let cmds = query_all_cmds();
+
         (
             Self {
                 greeter: if cmds.len() > 0 {
-                    Greeter::new(cmds[0].clone())
+                    let cmd = cmds.last().unwrap().clone();
+                    Greeter::new(cmd)
                 } else {
                     Greeter::default()
                 },
