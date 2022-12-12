@@ -69,12 +69,8 @@ pub fn query_sessions_xorg() -> Result<Vec<String>, i32> {
             for path in paths {
                 match parse_session_file(path) {
                     Ok(cmd) => {
-                        let args: Vec<&str> = cmd.split_ascii_whitespace().collect();
-                        let (cmd, args) = args.split_first().unwrap();
                         let cmd = format!(
-                            "startx `which {}` {} --",
-                            cmd,
-                            args.join(" "),
+                            "startx $HOME/.xinitrc {cmd} --",
                         );
                         cmds.push(cmd);
                     }
