@@ -1,0 +1,31 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cargo",
+			"command": "build",
+			"args": [
+				"--release"
+			],
+			"problemMatcher": [
+				"$rustc"
+			],
+			"group": {
+				"kind": "build"
+			},
+			"label": "build with cargo"
+		},
+		{
+			"type": "shell",
+			"command": "doas cp target/release/iced-greet /usr/local/bin/",
+			"dependsOn": [
+				"build with cargo"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "install iced-greet"
+		}
+	]
+}

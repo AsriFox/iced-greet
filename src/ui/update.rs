@@ -72,12 +72,12 @@ pub fn update(state: &mut GreetWindow, message: Message) -> Command<Message> {
 
 fn submit_username(state: &mut GreetWindow) -> Command<Message> {
     match state.greeter
-        .request_login(state.username.clone().unwrap())
-        .expect("An error occured") {
+    .request_login(state.username.clone().unwrap())
+    .expect("An error occured") {
         LoginResult::PromptVisible(_) 
         | LoginResult::PromptSecret(_) => {
             state.state = GreetWindowState::EnterPassword;
-            state.status = String::new();
+            state.status = "Enter password".to_string();
             state.user_image = 
                 if let Some(username) = &state.username {
                     Some(crate::ui::get_user_image(username.clone()))
@@ -102,12 +102,23 @@ fn submit_username(state: &mut GreetWindow) -> Command<Message> {
 
 fn submit_password(state: &mut GreetWindow) -> Command<Message> {
     match state.greeter
-        .respond_to_auth_message(Some(state.password.clone()))
-        .expect("Failed to respond") {
+    .respond_to_auth_message(
+        Some(state.password.clone())
+    ).expect("Failed to respond") {
         LoginResult::Failure => {
+            match state.greeter.cancel_login()
+            .expect("Failed to cancel login") {
+                LoginResult::AuthInfo(status) 
+                | LoginResult::AuthError(status) => {
+                    state.status = status;
+                },
+                _ => {}
+            }
+            state.password = String::new();
+            state.state = GreetWindowState::EnterUsername;
             if state.editing_username {
                 state.status = String::from("Login failed: wrong username or password");
-                state.state = GreetWindowState::EnterUsername;
+                state.user_image = None;
             } else {
                 state.status = String::from("Login failed: wrong password");
                 return submit_username(state);

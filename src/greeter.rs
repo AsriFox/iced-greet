@@ -61,6 +61,8 @@ impl Default for Greeter {
     }
 }
 
+type Result = std::result::Result<LoginResult, Box<dyn std::error::Error>>;
+
 impl Greeter {
     pub fn new(cmd: String) -> Self {
         let path = env::var("GREETD_SOCK")
@@ -73,19 +75,25 @@ impl Greeter {
         }
     }
     
-    pub fn request_login(&mut self, username: String) -> Result<LoginResult, Box<dyn std::error::Error>> {
+    pub fn request_login(&mut self, username: String) -> Result {
         Request::CreateSession { username }
             .write_to(&mut self.stream)?;
         self.read_response()
     }
     
-    pub fn respond_to_auth_message(&mut self, response: Option<String>) -> Result<LoginResult, Box<dyn std::error::Error>> {
+    pub fn respond_to_auth_message(&mut self, response: Option<String>) -> Result {
         Request::PostAuthMessageResponse { response }
             .write_to(&mut self.stream)?;
         self.read_response()
     }
+
+    pub fn cancel_login(&mut self) -> Result {
+        Request::CancelSession
+            .write_to(&mut self.stream)?;
+        self.read_response()
+    }
     
-    fn read_response(&mut self) -> Result<LoginResult, Box<dyn std::error::Error>> {
+    fn read_response(&mut self) -> Result {
         match Response::read_from(&mut self.stream)? {
             Response::AuthMessage {
                 auth_message,
@@ -111,7 +119,6 @@ impl Greeter {
                 error_type,
                 description,
             } => {
-                Request::CancelSession.write_to(&mut self.stream)?;
                 match error_type {
                     ErrorType::AuthError => Ok(LoginResult::Failure),
                     ErrorType::Error => Err(format!("login error: {:?}", description).into()),

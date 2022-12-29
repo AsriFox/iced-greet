@@ -69,6 +69,8 @@ pub fn query_sessions_xorg() -> Result<Vec<String>, i32> {
             for path in paths {
                 match parse_session_file(path) {
                     Ok(cmd) => {
+                        // xdg-desktop-portal.service requires 
+                        // `dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY`
                         let cmd = format!(
                             "startx $HOME/.xinitrc {cmd} --",
                         );
